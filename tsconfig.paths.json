@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "bundler",
+        "paths": {
+            "@components/*": [
+                "/src/components/*"
+            ],
+            "@pages/*": [
+                "/src/pages/*"
+            ],
+            "@hooks/*": [
+                "/src/hooks/*"
+            ],
+            "@layouts/*": [
+                "/src/layouts/*"
+            ],
+            "@assets/*": [
+                "/src/assets/*"
+            ],
+            "@utils/*": [
+                "/src/utils/*"
+            ]
+        }
+    }
+}
