@@ -1,21 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authApi } from "@api/authApi.ts";
 
 export default function AdminLogin() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError("");
+        setLoading(true);
 
-        // Dummy validation
-        if (email === "admin@matchabliss.com" && password === "123456") {
-            localStorage.setItem("isLoggedIn", "true");
-            navigate("/admin");
-        } else {
-            setError("Email atau password salah");
+        try {
+            const res = await authApi.adminLogin(email, password);
+            localStorage.setItem("auth_token", res.data.token);
+            localStorage.setItem("auth_user", JSON.stringify(res.data.user));
+            navigate("/admin/dashboard");
+
+        } catch (err: any) {
+            console.error(err);
+            setError(err.response?.data?.message || "Login gagal");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -73,9 +82,10 @@ export default function AdminLogin() {
 
                     <button
                         type="submit"
-                        className="w-full bg-[#2E4E1E] hover:bg-[#3B5E2A] text-white py-2.5 rounded-lg font-semibold shadow transition"
+                        disabled={loading}
+                        className="w-full bg-[#2E4E1E] hover:bg-[#3B5E2A] text-white py-2 rounded-lg font-semibold transition"
                     >
-                        Masuk
+                        {loading ? "Memproses..." : "Masuk"}
                     </button>
                 </form>
 

@@ -34,6 +34,9 @@
       ],
       "@utils/*": [
         "./src/utils/*"
+      ],
+      "@api/*": [
+        "./src/api/*"
       ]
     },
     "strict": true,

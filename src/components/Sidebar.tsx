@@ -5,6 +5,7 @@ export const Sidebar = () => {
 
     const handleLogout = () => {
         localStorage.removeItem("auth_token");
+        localStorage.removeItem("auth_user");
         navigate("/admin/login");
     };
 
