@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { AddProductModal } from "@components/AddProductModal";
 import { adminProductApi} from "@api/adminProductApi.ts";
 import toast from "react-hot-toast";
-import process from "process";
 import { img } from "@utils/img.ts";
 
 type category = {
