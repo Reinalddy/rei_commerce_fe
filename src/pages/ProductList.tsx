@@ -4,6 +4,7 @@ import { AddProductModal } from "@components/AddProductModal";
 import { adminProductApi} from "@api/adminProductApi.ts";
 import toast from "react-hot-toast";
 import { img } from "@utils/img.ts";
+import { AddVariantModal } from "@components/AddVariantModal";
 
 type category = {
     id: number;
@@ -44,11 +45,13 @@ type Pagination = {
 
 export default function ProductList() {
     const [open, setOpen] = useState(false);
+    const [openModalVariant, setOpenModalVariant] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [search, setSearch] = useState("");
+    const [productId, setProductId] = useState(90);
     const [pagination, setPagination] = useState<Pagination>({
         page: 1,
         limit: 10,
@@ -61,8 +64,24 @@ export default function ProductList() {
         if(resFromCreateProduct.data.code === 200){
             toast.success(resFromCreateProduct.data.message);
         }
-        console.log(resFromCreateProduct);
     };
+
+    const handleCreateVariant = async (formData: FormData) => {
+        console.log(formData, 'resFromCreateVariant');
+        const resFromCreateVariant = await adminProductApi.createVariant(formData);
+        if(resFromCreateVariant.data.code === 200){
+            toast.success(resFromCreateVariant.data.message);
+        } else {
+            toast.error(resFromCreateVariant.data.message);
+        }
+
+    };
+
+    const handleEditVariantBtnOnclick = (id: number) => {
+        setProductId(id);
+        // SET TIME OUT FIRTS FOR PREVENT ID NOT UPDATE
+        setTimeout(() => setOpenModalVariant(true), 0); 
+    }
 
     // LOAD PRODUCTS
     const loadProducts = async () => {
@@ -83,45 +102,6 @@ export default function ProductList() {
     useEffect(() => {
         loadProducts();
     }, [page, search]);
-
-    // const products = [
-    //     {
-    //         id: 1,
-    //         name: "Matcha Latte",
-    //         category: "Minuman",
-    //         price: 25000,
-    //         stock: 120,
-    //         image:
-    //             "https://images.unsplash.com/photo-1625203036517-2212c35c2a43?auto=format&fit=crop&w=600&q=80",
-    //     },
-    //     {
-    //         id: 2,
-    //         name: "Matcha Cheesecake",
-    //         category: "Dessert",
-    //         price: 32000,
-    //         stock: 80,
-    //         image:
-    //             "https://images.unsplash.com/photo-1614691098552-5aa2369900d3?auto=format&fit=crop&w=600&q=80",
-    //     },
-    //     {
-    //         id: 3,
-    //         name: "Iced Matcha Milk",
-    //         category: "Minuman",
-    //         price: 28000,
-    //         stock: 55,
-    //         image:
-    //             "https://images.unsplash.com/photo-1585238342027-772eae3b11a8?auto=format&fit=crop&w=600&q=80",
-    //     },
-    //     {
-    //         id: 4,
-    //         name: "Matcha Parfait",
-    //         category: "Dessert",
-    //         price: 35000,
-    //         stock: 42,
-    //         image:
-    //             "https://images.unsplash.com/photo-1629786080563-5cfa1c92e2f1?auto=format&fit=crop&w=600&q=80",
-    //     },
-    // ];
 
     return (
         <div className="flex min-h-screen bg-gray-50 text-gray-800">
@@ -194,6 +174,9 @@ export default function ProductList() {
                                     <td className="px-4 py-3">{p.category.name}</td>
                                     <td className="px-4 py-3">{p.createdBy.name}</td>
                                     <td className="px-4 py-3 text-center space-x-2">
+                                        <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" onClick={() => handleEditVariantBtnOnclick(p.id)}>
+                                            Tambah Variant
+                                        </button>
                                         <button className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">
                                             Edit
                                         </button>
@@ -207,7 +190,7 @@ export default function ProductList() {
                     </table>
                 </div>
 
-                {/* Pagination Dummy */}
+                {/* Pagination */}
                 <div className="flex justify-end mt-4 space-x-2">
                     <button
                         disabled={page <= 1}
@@ -237,6 +220,13 @@ export default function ProductList() {
                 isOpen={open}
                 onClose={() => setOpen(false)}
                 onSubmit={handleCreate}
+            />
+
+            <AddVariantModal 
+                isOpen={openModalVariant}
+                onClose={() => setOpenModalVariant(false)}
+                onSubmit={handleCreateVariant}
+                productId={productId.toString()}
             />
         </div>
     );
