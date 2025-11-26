@@ -49,6 +49,7 @@ export default function ProductList() {
     const [open, setOpen] = useState(false);
     const [openModalVariant, setOpenModalVariant] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
+    const [variantModalOpen, setVariantModalOpen] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [productDetails, setProductDetails] = useState<Product>({
         id: 0,
@@ -81,6 +82,9 @@ export default function ProductList() {
         const resFromCreateProduct = await adminProductApi.createProduct(formData);
         if(resFromCreateProduct.data.code === 200){
             toast.success(resFromCreateProduct.data.message);
+            // RELOAD PRODUCTS
+            loadProducts();
+            
         }
     };
 
@@ -99,6 +103,8 @@ export default function ProductList() {
         const resFromUpdateProduct = await adminProductApi.updateProduct(id, formData);
         if(resFromUpdateProduct.data.code === 200){
             toast.success(resFromUpdateProduct.data.message);
+            // RELOAD PRODUCTS
+            loadProducts();
         }
     };
 
@@ -125,6 +131,8 @@ export default function ProductList() {
         const resFromDeleteProduct = await adminProductApi.deleteProduct(id);
         if(resFromDeleteProduct.data.code === 200){
             toast.success(resFromDeleteProduct.data.message);
+            // RELOAD PRODUCTS
+            loadProducts();
         }
     }
 
@@ -243,6 +251,16 @@ export default function ProductList() {
                                     <td className="px-4 py-3">{p.category?.name ?? "-"}</td>
                                     <td className="px-4 py-3">{p.createdBy.name}</td>
                                     <td className="px-4 py-3 text-center space-x-2">
+                                        <button
+                                            className="bg-blue-500 text-white px-3 py-1 rounded"
+                                            onClick={() => {
+                                                setProductDetails(p);
+                                                setVariantModalOpen(true);
+                                            }}
+                                        >
+                                            Manage Variants
+                                        </button>
+
                                         <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" onClick={() => handleEditVariantBtnOnclick(p.id)}>
                                             Tambah Variant
                                         </button>
