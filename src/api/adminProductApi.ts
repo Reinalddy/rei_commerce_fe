@@ -1,6 +1,10 @@
 import axiosClient from "./axiosClient.ts";
 
 export const adminProductApi = {
+    getTotalProduct: async () => {
+        const res = await axiosClient.get("/admin/products/total-product", { headers: { "Content-Type": "application/json" } });
+        return res;  
+    },
     createProduct: async (data: FormData) => {
       const res = await axiosClient.post("/admin/products", data, { headers: { "Content-Type": "multipart/form-data" } });
       return res;
@@ -11,6 +15,10 @@ export const adminProductApi = {
     },
     deleteProduct: async (id: number) => {
         const res = await axiosClient.delete(`/admin/products/${id}`, { headers: { "Content-Type": "application/json" } });
+        return res;
+    },
+    getTotalVariant: async () => {
+        const res = await axiosClient.get("/admin/products/variant/get-total-variant", { headers: { "Content-Type": "application/json" } });
         return res;
     },
     fetchVariants: async (productId: number) => {

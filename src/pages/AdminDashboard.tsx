@@ -1,6 +1,42 @@
+import { adminProductApi } from "@api/adminProductApi.ts";
 import { Sidebar } from "@components/Sidebar";
+import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
+    const [getTotalProductLoading, setGetTotalProductLoading] = useState(false);
+    const [totalProduct, setTotalProduct] = useState(0);
+    const [getTotalVariantLoading, setGetTotalVariantLoading] = useState(false);
+    const [totalVariant, setTotalVariant] = useState(0);
+
+    const geTotalProduk = async () => {
+        try {
+            setGetTotalProductLoading(true);
+            const res = await adminProductApi.getTotalProduct();
+            setTotalProduct(res.data.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setGetTotalProductLoading(false);
+        }
+    };
+
+    const getTotalVariant = async () => {
+        try {
+            setGetTotalVariantLoading(true);
+            const res = await adminProductApi.getTotalVariant();
+            setTotalVariant(res.data.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setGetTotalVariantLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        geTotalProduk();
+        getTotalVariant();
+    }, []);
+
     return (
         <div className="flex min-h-screen bg-gray-100 text-gray-800">
             {/* 🌿 SIDEBAR */}
@@ -30,79 +66,22 @@ export default function AdminDashboard() {
                 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     <div className="bg-white shadow rounded-lg p-5 border-t-4 border-[#7FB77E]">
                         <h3 className="text-sm text-gray-500 mb-1">Total Penjualan</h3>
-                        <p className="text-2xl font-bold text-[#2E4E1E]">Rp 12.540.000</p>
+                        <p className="text-2xl font-bold text-[#2E4E1E]">Rp. 2.500.000</p>
                     </div>
 
                     <div className="bg-white shadow rounded-lg p-5 border-t-4 border-[#93C572]">
-                        <h3 className="text-sm text-gray-500 mb-1">Produk Terdaftar</h3>
-                        <p className="text-2xl font-bold text-[#2E4E1E]">42 Produk</p>
+                        <h3 className="text-sm text-gray-500 mb-1">Total Produk</h3>
+                        <p className="text-2xl font-bold text-[#2E4E1E]">{getTotalProductLoading ? "Loading..." : totalProduct}</p>
+                    </div>
+
+                    <div className="bg-white shadow rounded-lg p-5 border-t-4 border-[#B8E1A9]">
+                        <h3 className="text-sm text-gray-500 mb-1">Total Varian Produk</h3>
+                        <p className="text-2xl font-bold text-[#2E4E1E]">{getTotalVariantLoading ? "Loading..." : totalVariant}</p>
                     </div>
 
                     <div className="bg-white shadow rounded-lg p-5 border-t-4 border-[#A7D477]">
                         <h3 className="text-sm text-gray-500 mb-1">Transaksi Bulan Ini</h3>
                         <p className="text-2xl font-bold text-[#2E4E1E]">128</p>
-                    </div>
-
-                    <div className="bg-white shadow rounded-lg p-5 border-t-4 border-[#B8E1A9]">
-                        <h3 className="text-sm text-gray-500 mb-1">Pelanggan Baru</h3>
-                        <p className="text-2xl font-bold text-[#2E4E1E]">23</p>
-                    </div>
-                </section>
-
-                {/* 🛍️ Product Management */}
-                <section className="mb-10">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xl font-semibold text-[#2E4E1E]">
-                            Manage Products
-                        </h3>
-                        <button className="bg-[#2E4E1E] text-white px-4 py-2 rounded-lg hover:bg-green-800">
-                            + Add Product
-                        </button>
-                    </div>
-
-                    <div className="overflow-x-auto bg-white shadow rounded-lg">
-                        <table className="min-w-full text-sm">
-                            <thead className="bg-[#EAF4E0] text-[#2E4E1E]">
-                                <tr>
-                                    <th className="px-4 py-3 text-left">Nama Produk</th>
-                                    <th className="px-4 py-3 text-left">Harga</th>
-                                    <th className="px-4 py-3 text-left">Stok</th>
-                                    <th className="px-4 py-3 text-left">Kategori</th>
-                                    <th className="px-4 py-3 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[
-                                    {
-                                        name: "Matcha Latte",
-                                        price: "Rp 25.000",
-                                        stock: 120,
-                                        category: "Minuman",
-                                    },
-                                    {
-                                        name: "Matcha Cheesecake",
-                                        price: "Rp 32.000",
-                                        stock: 80,
-                                        category: "Dessert",
-                                    },
-                                ].map((p, i) => (
-                                    <tr key={i} className="border-b">
-                                        <td className="px-4 py-3">{p.name}</td>
-                                        <td className="px-4 py-3">{p.price}</td>
-                                        <td className="px-4 py-3">{p.stock}</td>
-                                        <td className="px-4 py-3">{p.category}</td>
-                                        <td className="px-4 py-3 text-center space-x-2">
-                                            <button className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">
-                                                Edit
-                                            </button>
-                                            <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
                     </div>
                 </section>
 
