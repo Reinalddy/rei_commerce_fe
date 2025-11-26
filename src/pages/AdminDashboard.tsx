@@ -2,7 +2,7 @@ import { Sidebar } from "@components/Sidebar";
 
 export default function AdminDashboard() {
     return (
-        <div className="flex min-h-screen bg-gray-50 text-gray-800">
+        <div className="flex min-h-screen bg-gray-100 text-gray-800">
             {/* 🌿 SIDEBAR */}
             <Sidebar />
             {/* 🌸 MAIN CONTENT */}

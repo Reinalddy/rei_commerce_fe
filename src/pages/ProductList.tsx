@@ -7,6 +7,7 @@ import { img } from "@utils/img.ts";
 import { AddVariantModal } from "@components/AddVariantModal";
 import { EditProductModal } from "@components/EditProductModal";
 import Swal from "sweetalert2";
+import { VariantModal } from "@components/VariantModal.tsx";
 
 type category = {
     id: number;
@@ -49,7 +50,7 @@ export default function ProductList() {
     const [open, setOpen] = useState(false);
     const [openModalVariant, setOpenModalVariant] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
-    const [variantModalOpen, setVariantModalOpen] = useState(false);
+    const [manageVariantModal, setManageVariantModal] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [productDetails, setProductDetails] = useState<Product>({
         id: 0,
@@ -89,7 +90,6 @@ export default function ProductList() {
     };
 
     const handleCreateVariant = async (formData: FormData) => {
-        console.log(formData, 'resFromCreateVariant');
         const resFromCreateVariant = await adminProductApi.createVariant(formData);
         if(resFromCreateVariant.data.code === 200){
             toast.success(resFromCreateVariant.data.message);
@@ -107,12 +107,6 @@ export default function ProductList() {
             loadProducts();
         }
     };
-
-    const handleEditVariantBtnOnclick = (id: number) => {
-        setProductId(id);
-        // SET TIME OUT FIRTS FOR PREVENT ID NOT UPDATE
-        setTimeout(() => setOpenModalVariant(true), 0); 
-    }
 
     const handleDeleteProduct = async (id: number) => {
         // SHOW CONFIRMATION
@@ -137,7 +131,6 @@ export default function ProductList() {
     }
 
     const handleEditBtnOnclick = (id: number, product: Product) => {
-        console.log(product);
         setProductId(id);
         setProductDetails(product);
         // SET TIME OUT FIRTS FOR PREVENT ID NOT UPDATE
@@ -164,12 +157,66 @@ export default function ProductList() {
     const loadProductCategories = async () => {
         try {
             const res = await adminProductApi.getAllProductCategory();
-            console.log(res.data.data, 'res');
             setCategories(res.data.data);
         } catch (error) {
             toast.error("Gagal memuat kategori produk");
             console.error(error);
         }
+    }
+
+    const fetchVariants = async (productId: number) => {
+        try {
+            const res = await adminProductApi.fetchVariants(productId);
+            console.log(res.data.data);
+            return res.data.data;
+            
+        } catch (error) {
+            console.error(error);
+            toast.error("Gagal Memuat Variants");
+        }
+    }
+
+    const addVariant = async (form: FormData) => {
+        try {
+            const res = await adminProductApi.createVariant(form);
+            if(res.data.code === 200){
+                toast.success(res.data.message);
+            } else {
+                toast.error(res.data.message);
+            }
+            return res.data.data;
+        } catch (error) {
+            console.log(error);
+            toast.error("Gagal Menambahkan Variant");
+        }
+    }
+
+    const updateVariant = async (id: number, form: FormData) => {
+        try {
+            const res = await adminProductApi.updateVariant(id, form);
+            toast.success(res.data.message);
+            return res.data.data;
+        } catch (error) {
+            console.log(error);
+            toast.error("Gagal Memperbarui Variant");
+        }
+    }
+
+    const deleteVariant = async (id: number) => {
+        try {            
+            const res = await adminProductApi.deleteVariant(id);
+            toast.success(res.data.message);
+            return res.data.data;
+        } catch (error) {
+            console.log(error);
+            toast.error("Gagal Menghapus Variant");
+        }
+    }
+
+    const handleManageVariant = (product: Product) => {
+        setProductDetails(product);
+        // SET TIME OUT FIRTS FOR PREVENT ID NOT UPDATE
+        setTimeout(() => setManageVariantModal(true), 0); 
     }
 
     useEffect(() => {
@@ -254,15 +301,10 @@ export default function ProductList() {
                                         <button
                                             className="bg-blue-500 text-white px-3 py-1 rounded"
                                             onClick={() => {
-                                                setProductDetails(p);
-                                                setVariantModalOpen(true);
+                                                handleManageVariant(p);
                                             }}
                                         >
                                             Manage Variants
-                                        </button>
-
-                                        <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" onClick={() => handleEditVariantBtnOnclick(p.id)}>
-                                            Tambah Variant
                                         </button>
                                         <button className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500" onClick={() => handleEditBtnOnclick(p.id, p)}>
                                             Edit
@@ -322,6 +364,16 @@ export default function ProductList() {
                 onSubmit={handleUpdateProducts}
                 product={productDetails}
                 productCategories={categories}
+            />
+
+            <VariantModal
+                isOpen={manageVariantModal}
+                product={productDetails}
+                onClose={() => setManageVariantModal(false)}
+                fetchVariants={fetchVariants}
+                onAdd={addVariant}
+                onUpdate={updateVariant}
+                onDelete={deleteVariant}
             />
         </div>
     );
